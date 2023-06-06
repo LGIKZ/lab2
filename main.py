@@ -1,4 +1,5 @@
 import telebot
+from telebot import types
 
 # Токен вашего бота
 token = '6177157741:AAEPyD9E2nvThJqJX1h-XlcFD7eaQpPe6yA'
@@ -15,22 +16,23 @@ faq = {
     "Как подать заявление на общежитие?": "Информацию о заявлении на общежитие можно получить в отделе студенческого обслуживания вуза.",
 }
 
+# Создаем объект клавиатуры с кнопками
+keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+for question in faq:
+    button = types.KeyboardButton(text=question)
+    keyboard.add(button)
 
 # Обработчик команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "Привет! Я - чат-бот для новичков в вузе. Задай мне свой вопрос.")
-
+    bot.reply_to(message, "Привет! Я - чат-бот для новичков в вузе.", reply_markup=keyboard)
 
 # Обработчик текстовых сообщений
 @bot.message_handler(func=lambda message: True)
-def reply_to_message(message):
-    question = message.text
-    if question in faq:
-        bot.reply_to(message, faq[question])
-    else:
-        bot.reply_to(message, "Извините, я не понимаю ваш вопрос. Попробуйте задать другой вопрос.")
-
+def handle_message(message):
+    text = message.text
+    if text in faq:
+        bot.reply_to(message, faq[text])
 
 # Запускаем бота
 bot.polling()
